@@ -1,0 +1,111 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+class Auction {
+    private Map<String, Double> bids;
+    private String itemName;
+    private double startingPrice;
+    private double currentHighestBid;
+    private String currentHighestBidder;
+
+    public Auction(String itemName, double startingPrice) {
+        this.itemName = itemName;
+        this.startingPrice = startingPrice;
+        this.bids = new HashMap<>();
+        this.currentHighestBid = startingPrice;
+        this.currentHighestBidder = null;
+    }
+
+    public void placeBid(String bidder, double amount) {
+        if (amount > currentHighestBid) {
+            bids.put(bidder, amount);
+            currentHighestBid = amount;
+            currentHighestBidder = bidder;
+            System.out.println("Bid placed successfully!");
+        } else {
+            System.out.println("Bid amount must be higher than the current highest bid.");
+        }
+    }
+
+    public void endAuction() {
+        if (currentHighestBidder != null) {
+            System.out.println("The auction for " + itemName + " has ended.");
+            System.out.println("The winning bid is $" + currentHighestBid + " from " + currentHighestBidder + ".");
+        } else {
+            System.out.println("The auction for " + itemName + " has ended with no bids.");
+        }
+    }
+}
+
+public class OnlineAuctionSystem {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ArrayList<Auction> auctions = new ArrayList<>();
+
+        while (true) {
+            System.out.println("Welcome to the Online Auction System!");
+            System.out.println("1. Create a new auction");
+            System.out.println("2. Place a bid on an auction");
+            System.out.println("3. End an auction");
+            System.out.println("4. Exit");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline character
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the item name: ");
+                    String itemName = scanner.nextLine();
+                    System.out.print("Enter the starting price: ");
+                    double startingPrice = scanner.nextDouble();
+                    scanner.nextLine();
+                    Auction newAuction = new Auction(itemName, startingPrice);
+                    auctions.add(newAuction);
+                    System.out.println("Auction created successfully!");
+                    break;
+                case 2:
+                    if (auctions.isEmpty()) {
+                        System.out.println("There are no active auctions.");
+                        break;
+                    }
+                    System.out.println("Current active auctions:");
+                    for (int i = 0; i < auctions.size(); i++) {
+                        System.out.println((i + 1) + ". " + auctions.get(i).itemName);
+                    }
+                    System.out.print("Enter the auction number to place a bid: ");
+                    int auctionIndex = scanner.nextInt() - 1;
+                    scanner.nextLine();
+                    System.out.print("Enter your name: ");
+                    String bidder = scanner.nextLine();
+                    System.out.print("Enter your bid amount: ");
+                    double bidAmount = scanner.nextDouble();
+                    scanner.nextLine();
+                    auctions.get(auctionIndex).placeBid(bidder, bidAmount);
+                    break;
+                case 3:
+                    if (auctions.isEmpty()) {
+                        System.out.println("There are no active auctions.");
+                        break;
+                    }
+                    System.out.println("Current active auctions:");
+                    for (int i = 0; i < auctions.size(); i++) {
+                        System.out.println((i + 1) + ". " + auctions.get(i).itemName);
+                    }
+                    System.out.print("Enter the auction number to end: ");
+                    int auctionToEndIndex = scanner.nextInt() - 1;
+                    scanner.nextLine();
+                    auctions.get(auctionToEndIndex).endAuction();
+                    auctions.remove(auctionToEndIndex);
+                    break;
+                case 4:
+                    System.out.println("Exiting the Online Auction System.");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
